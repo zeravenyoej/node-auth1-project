@@ -10,7 +10,7 @@ module.exports = {
 
 
 function findAll(){
-    return db("users")
+    return db("users").select("id", "username")
 }
 
 function findBy(filter) {

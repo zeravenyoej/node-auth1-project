@@ -1,12 +1,11 @@
 const express = require("express")
 const router = express.Router()
-const userHelper = require('./users-model')
+const Users = require('./users-model')
 
 //get all 
 router.get('/', async (req, res, next) => {
     try {
-        
-
+        res.json(await Users.findAll())
     } catch(err) {
         next(err)
     }
@@ -21,16 +20,6 @@ router.get('/:id', async (req, res, next) => {
         next(err)
     }
 })
-
-//create
-router.post('/', async (req, res, next) => {
-    try {
-
-    } catch(err) {
-        next(err)
-    }
-})
-
 
 
 
