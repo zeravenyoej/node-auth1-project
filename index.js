@@ -1,7 +1,8 @@
 const express = require("express")
 const helmet = require("helmet")
 const authRoutes = require("./auth/auth-router")
-const loginRoutes = require('./login/login-routes')
+const usersRoutes = require("./users/users-routes")
+
 
 
 const server = express()

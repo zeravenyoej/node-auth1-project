@@ -1,20 +1,32 @@
 const db = require('../data/config')
+const bcrypt = require("bcryptjs")
 
 module.exports = {
     findAll,
+    findBy,
     findById,
     createUser
 }
 
 
 function findAll(){
-    return db("")
+    return db("users")
+}
+
+function findBy(filter) {
+	return db("users")
+		.select("id", "username", "password")
+		.where(filter)
 }
 
 function findById(id){
-    return db("").where()
+    return db("users").where({ id }).select("id", "username").first()
 }
 
-function createRegister(credentials){
-    return db("").insert(credentials)
+
+// is the await on the findById wrong? it's not in the guided project
+async function createUser(credentials){
+    credentials.password = await bcrypt.hash(credentials.password, 14)
+    const [id] = await db("users").insert(credentials)
+    return findById(id)
 }

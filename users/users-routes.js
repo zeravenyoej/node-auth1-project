@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const helper = this.require('./users-model')
+const userHelper = require('./users-model')
 
 //get all 
 router.get('/', async (req, res, next) => {

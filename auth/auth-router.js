@@ -1,38 +1,28 @@
 const express = require("express")
+const userHelper = require('../users/users-model')
+
 const router = express.Router()
-const helper = this.require('./register-model')
 
-//get all 
-router.get('/', async (req, res, next) => {
+//register a new user
+router.post('/register', async (req, res, next) => {
     try {
-        
+        const { username, password } = req.body
+        const user = await userHelper.findBy({username}).first()
+        if (user) {
+            return res.status(409).json({message: "Username is already taken"})
+        } else if (!password) {
+            return res.status(400).json({message: "Please provide a password"})
+        }
 
-    } catch(err) {
-        next(err)
-    }
-})
-
-//get by id
-router.get('/', async (req, res, next) => {
-    try {
-        const { id } = req.params
-
-    } catch(err) {
-        next(err)
-    }
-})
-
-//create
-router.post('/', async (req, res, next) => {
-    try {
-
+        const newUser = await userHelper.createUser(req.body)
+        res.status(201).json(newUser)
     } catch(err) {
         next(err)
     }
 })
 
 
-//create
+// login user
 router.post('/', async (req, res, next) => {
     try {
 
