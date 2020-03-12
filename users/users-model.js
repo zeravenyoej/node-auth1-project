@@ -24,9 +24,8 @@ function findById(id){
 }
 
 
-// is the await on the findById wrong? it's not in the guided project
 async function createUser(credentials){
-    credentials.password = await bcrypt.hash(credentials.password, 14)
+    credentials.password = await bcrypt.hash(credentials.password, 12)
     const [id] = await db("users").insert(credentials)
     return findById(id)
 }

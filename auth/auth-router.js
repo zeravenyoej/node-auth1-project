@@ -1,5 +1,7 @@
 const express = require("express")
-const userHelper = require('../users/users-model')
+const Users = require('../users/users-model')
+const doesUserExist = require('../middleware/doesUserExist')
+const bcrypt = require("bcryptjs")
 
 const router = express.Router()
 
@@ -7,14 +9,14 @@ const router = express.Router()
 router.post('/register', async (req, res, next) => {
     try {
         const { username, password } = req.body
-        const user = await userHelper.findBy({username}).first()
+        const user = await Users.findBy({username}).first()
         if (user) {
             return res.status(409).json({message: "Username is already taken"})
         } else if (!password) {
             return res.status(400).json({message: "Please provide a password"})
         }
 
-        const newUser = await userHelper.createUser(req.body)
+        const newUser = await Users.createUser(req.body)
         res.status(201).json(newUser)
     } catch(err) {
         next(err)
@@ -23,10 +25,19 @@ router.post('/register', async (req, res, next) => {
 
 
 // login user
-router.post('/', async (req, res, next) => {
+router.post('/login', doesUserExist(), async (req, res, next) => {
     try {
+        const { username, password } = req.body
+        const user = await Users.findBy({ username }).first()
+        const passwordValid = await bcrypt.compare(password, user.password)
+        
+        if(!passwordValid){
+            return res.status(401).json({message: "Invalid password"})
+        }
 
+        res.json({message: `Welcome ${username}!`})
     } catch(err) {
+        console.log('ERROR', err)
         next(err)
     }
 })
