@@ -1,28 +1,31 @@
-const Users = require('../users/users-model')
-const bcrypt = require("bcryptjs")
+// from our manual session implementation
+// **********************************************
+// const Users = require('../users/users-model')
+// const bcrypt = require("bcryptjs")
 
-function restrict(){
-    const authError = {
-        message: "You shall not pass!"
-    }
-    return async (req, res, next) => {
+// const sessions = {}
+
+module.exports = function restrict(){
+
+    return (req, res, next) => {
         try {
-            //if the user didn't even GIVE this info in their headers
-            const { username, password } = req.headers
-            if(!username || !password){
-                return res.status(401).json({message: "give me info"})
-            }
+//      our manual session implementation
+//      **********************************************
+// 			const { cookie } = req.headers
+// 			if (!cookie) {
+// 				return res.status(401).json(authError)
+// 			}
+// 
+// 			const authToken = cookie.replace("token=", "")
+// 			if (!sessions[authToken]) {
+// 				return res.status(401).json(authError)
+// 			}
 
-            //If the  usernames don't match
-            const user = await Users.findBy({ username }).first()
-            if(!user) {
-                return res.status(401).json({message: 'invalid username'})
-            }
+			// we set `req.session.user` when the user is authenticated in `/login`.
+			// so we know if it's not set, the user isn't authenticated yet.
 
-            //If the passwords don't mach
-            const passwordValid = await bcrypt.compare(password, user.password)
-            if(!passwordValid){
-                return res.status(401).json({message: "invalid password"})
+            if (!req.session || !req.session.user) {
+                return res.status(401).json({message: "You shall not pass!"})
             }
 
             next()
@@ -32,4 +35,4 @@ function restrict(){
     }
 }
 
-module.exports = restrict
+//module.exports = restrict
