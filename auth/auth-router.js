@@ -1,6 +1,7 @@
 const express = require("express")
 const Users = require('../users/users-model')
 const doesUserExist = require('../middleware/doesUserExist')
+// const restrict = require('../middleware/restrict')
 const bcrypt = require("bcryptjs")
 
 const router = express.Router()
@@ -9,10 +10,13 @@ const router = express.Router()
 router.post('/register', async (req, res, next) => {
     try {
         const { username, password } = req.body
-        const user = await Users.findBy({username}).first()
+        const user = await Users.findBy({ username }).first()
+
         if (user) {
             return res.status(409).json({message: "Username is already taken"})
-        } else if (!password) {
+        } 
+        
+        if (!password) {
             return res.status(400).json({message: "Please provide a password"})
         }
 
@@ -28,16 +32,15 @@ router.post('/register', async (req, res, next) => {
 router.post('/login', doesUserExist(), async (req, res, next) => {
     try {
         const { username, password } = req.body
-        const user = await Users.findBy({ username }).first()
-        const passwordValid = await bcrypt.compare(password, user.password)
-        
-        if(!passwordValid){
-            return res.status(401).json({message: "Invalid password"})
+        const isPasswordValid = await bcrypt.compare(password, req.dbUser.password)
+    
+        if(!isPasswordValid){
+            return res.status(401).json({message: "Invalid credentials"})
         }
 
         res.json({message: `Welcome ${username}!`})
     } catch(err) {
-        console.log('ERROR', err)
+        console.log("ERROR: ", err)
         next(err)
     }
 })
