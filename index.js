@@ -13,6 +13,7 @@ server.use(helmet())
 server.use(express.json())
 server.use(session({
     name: "token", //overwrites the default cookie name, hides our stack better
+    secure: false, 
     resave: false, //avoid recreating sessions that have not changes
     saveUninitialized: false, //GDPR laws against setting cookies automatically 
     secret: process.env.COOKIE_SECRET || "secret", // cryptographically sign the cookie
@@ -23,6 +24,7 @@ server.use(session({
     store: new KnexSessionStore({
         createTable: true, //if the session table doesn't exist, create it automatically
         knex: dbConfig, //configured instance of knex
+        clearInterval: 1000 * 60 * 15
     }),
 }))
 
